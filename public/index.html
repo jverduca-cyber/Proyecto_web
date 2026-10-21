@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestor de Proyectos</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <header class="header">
+    <h1>Gestor de Proyectos</h1>
+    <p>Administra tus proyectos, tareas y equipo</p>
+  </header>
+
+  <nav class="nav">
+    <button class="nav-btn active" data-section="proyectos">Proyectos</button>
+    <button class="nav-btn" data-section="tareas">Tareas</button>
+    <button class="nav-btn" data-section="miembros">Miembros</button>
+  </nav>
+
+  <main class="main">
+
+    <!-- ===================== SECCIÓN PROYECTOS ===================== -->
+    <section id="sec-proyectos" class="section active">
+      <div class="section-header">
+        <h2>Proyectos</h2>
+        <button class="btn btn-primary" id="btn-nuevo-proyecto">+ Nuevo Proyecto</button>
+      </div>
+
+      <div id="lista-proyectos" class="cards-grid"></div>
+
+      <!-- Modal para crear/editar proyecto -->
+      <div id="modal-proyecto" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="modal-proyecto-titulo">Nuevo Proyecto</h3>
+            <button class="modal-close" id="cerrar-modal-proyecto">&times;</button>
+          </div>
+          <form id="form-proyecto">
+            <input type="hidden" id="proyecto-id">
+            <div class="form-group">
+              <label for="proyecto-nombre">Nombre *</label>
+              <input type="text" id="proyecto-nombre" required maxlength="150">
+            </div>
+            <div class="form-group">
+              <label for="proyecto-descripcion">Descripción</label>
+              <textarea id="proyecto-descripcion" rows="3"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="proyecto-fecha-inicio">Fecha Inicio *</label>
+                <input type="date" id="proyecto-fecha-inicio" required>
+              </div>
+              <div class="form-group">
+                <label for="proyecto-fecha-fin">Fecha Fin</label>
+                <input type="date" id="proyecto-fecha-fin">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="proyecto-estado">Estado</label>
+                <select id="proyecto-estado">
+                  <option value="Planificación">Planificación</option>
+                  <option value="En progreso">En progreso</option>
+                  <option value="Completado">Completado</option>
+                  <option value="Cancelado">Cancelado</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="proyecto-responsable">Responsable *</label>
+                <select id="proyecto-responsable" required>
+                  <option value="">Seleccionar...</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" id="cancelar-proyecto">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SECCIÓN TAREAS ===================== -->
+    <section id="sec-tareas" class="section hidden">
+      <div class="section-header">
+        <h2>Tareas</h2>
+        <div class="section-header-actions">
+          <select id="filtro-proyecto" class="select-filtro">
+            <option value="">Todos los proyectos</option>
+          </select>
+          <button class="btn btn-primary" id="btn-nueva-tarea">+ Nueva Tarea</button>
+        </div>
+      </div>
+
+      <div id="lista-tareas" class="table-container">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Proyecto</th>
+              <th>Asignado</th>
+              <th>Prioridad</th>
+              <th>Estado</th>
+              <th>Fecha Límite</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-tareas"></tbody>
+        </table>
+      </div>
+
+      <!-- Modal para crear/editar tarea -->
+      <div id="modal-tarea" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="modal-tarea-titulo">Nueva Tarea</h3>
+            <button class="modal-close" id="cerrar-modal-tarea">&times;</button>
+          </div>
+          <form id="form-tarea">
+            <input type="hidden" id="tarea-id">
+            <div class="form-group">
+              <label for="tarea-titulo">Título *</label>
+              <input type="text" id="tarea-titulo" required maxlength="200">
+            </div>
+            <div class="form-group">
+              <label for="tarea-descripcion">Descripción</label>
+              <textarea id="tarea-descripcion" rows="3"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="tarea-proyecto">Proyecto *</label>
+                <select id="tarea-proyecto" required>
+                  <option value="">Seleccionar...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="tarea-miembro">Asignar a</label>
+                <select id="tarea-miembro">
+                  <option value="">Sin asignar</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="tarea-prioridad">Prioridad</label>
+                <select id="tarea-prioridad">
+                  <option value="Baja">Baja</option>
+                  <option value="Media" selected>Media</option>
+                  <option value="Alta">Alta</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="tarea-estado">Estado</label>
+                <select id="tarea-estado">
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="En progreso">En progreso</option>
+                  <option value="Completada">Completada</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="tarea-fecha-limite">Fecha Límite</label>
+              <input type="date" id="tarea-fecha-limite">
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" id="cancelar-tarea">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SECCIÓN MIEMBROS ===================== -->
+    <section id="sec-miembros" class="section hidden">
+      <div class="section-header">
+        <h2>Miembros del Equipo</h2>
+        <button class="btn btn-primary" id="btn-nuevo-miembro">+ Nuevo Miembro</button>
+      </div>
+
+      <div id="lista-miembros" class="table-container">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-miembros"></tbody>
+        </table>
+      </div>
+
+      <!-- Modal para crear/editar miembro -->
+      <div id="modal-miembro" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="modal-miembro-titulo">Nuevo Miembro</h3>
+            <button class="modal-close" id="cerrar-modal-miembro">&times;</button>
+          </div>
+          <form id="form-miembro">
+            <input type="hidden" id="miembro-id">
+            <div class="form-group">
+              <label for="miembro-nombre">Nombre *</label>
+              <input type="text" id="miembro-nombre" required maxlength="100">
+            </div>
+            <div class="form-group">
+              <label for="miembro-email">Email *</label>
+              <input type="email" id="miembro-email" required maxlength="150">
+            </div>
+            <div class="form-group">
+              <label for="miembro-rol">Rol</label>
+              <select id="miembro-rol">
+                <option value="Desarrollador">Desarrollador</option>
+                <option value="Diseñadora">Diseñador/a</option>
+                <option value="Líder de Proyecto">Líder de Proyecto</option>
+                <option value="QA Tester">QA Tester</option>
+                <option value="DevOps">DevOps</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" id="cancelar-miembro">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notificación -->
+  <div id="notificacion" class="notificacion hidden"></div>
+
+  <footer class="footer">
+    <p>Gestor de Proyectos &mdash; Desarrollo Web 2026</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
