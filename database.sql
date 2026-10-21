@@ -1,50 +1,108 @@
--- ================================================
--- Gestor de Proyectos - Base de Datos
--- ================================================
+-- ============================================================
+-- SCRIPT DDL: GESTOR DE PROYECTOS
+-- Base de datos relacional para gestionar miembros, proyectos y tareas.
+-- Incluye restricciones de integridad referencial y UTF-8.
+-- ============================================================
 
-CREATE DATABASE IF NOT EXISTS gestor_proyectos;
+-- ------------------------------------------------------------
+-- 1. CREACIÓN Y SELECCIÓN DE LA BASE DE DATOS
+-- ------------------------------------------------------------
+-- Crear la base de datos solo si no existe previamente (idempotencia)
+CREATE DATABASE IF NOT EXISTS gestor_proyectos
+    CHARACTER SET utf8mb4           -- Soporte para caracteres multilingües, tildes y emojis
+    COLLATE utf8mb4_unicode_ci;     -- Comparación insensible a mayúsculas/minúsculas y acentos
+
+-- Seleccionar la base de datos activa para ejecutar el script
 USE gestor_proyectos;
 
--- Tabla: miembros
+-- ------------------------------------------------------------
+-- 2. TABLA: miembros
+-- Registra los usuarios e integrantes del sistema.
+-- ------------------------------------------------------------
 CREATE TABLE miembros (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    rol VARCHAR(50) NOT NULL DEFAULT 'Desarrollador',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+    -- Clave primaria autoincremental para cada miembro
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    -- Nombre completo del usuario (Obligatorio)
+    nombre     VARCHAR(100) NOT NULL,
+    -- Correo electrónico único para evitar cuentas duplicadas (Obligatorio)
+    email      VARCHAR(150) NOT NULL UNIQUE,
+    -- Rol del usuario dentro del equipo (Por defecto: 'Desarrollador')
+    rol        VARCHAR(50)  NOT NULL DEFAULT 'Desarrollador',
+    -- Fecha y hora de registro (Asignada automáticamente por el servidor)
+    created_at TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB; -- Motor InnoDB habilitado para soporte de claves foráneas y transacciones
 
--- Tabla: proyectos
+-- ------------------------------------------------------------
+-- 3. TABLA: proyectos
+-- Almacena los proyectos creados y vinculados a un responsable.
+-- ------------------------------------------------------------
 CREATE TABLE proyectos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(150) NOT NULL,
-    descripcion TEXT,
-    fecha_inicio DATE NOT NULL,
-    fecha_fin DATE,
-    estado ENUM('Planificación', 'En progreso', 'Completado', 'Cancelado') NOT NULL DEFAULT 'Planificación',
-    miembro_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (miembro_id) REFERENCES miembros(id) ON DELETE RESTRICT
-);
+    -- Clave primaria autoincremental del proyecto
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    -- Nombre o título corto del proyecto (Obligatorio)
+    nombre       VARCHAR(150) NOT NULL,
+    -- Descripción extensa del alcance del proyecto (Opcional)
+    descripcion  TEXT,
+    -- Fecha programada de inicio (Obligatoria)
+    fecha_inicio DATE         NOT NULL,
+    -- Fecha estimada o real de cierre (Opcional)
+    fecha_fin    DATE,
+    -- Estado restringido a valores específicos (Por defecto: 'Planificación')
+    estado       ENUM('Planificación', 'En progreso', 'Completado', 'Cancelado')
+                 NOT NULL DEFAULT 'Planificación',
+    -- ID del miembro responsable/líder del proyecto (Clave Foránea, Obligatorio)
+    miembro_id   INT          NOT NULL,
+    -- Fecha y hora de creación del registro
+    created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    -- RESTRICCIÓN DE INTEGRIDAD REFERENCIAL:
+    -- ON DELETE RESTRICT: Protege la base de datos impidiendo borrar un miembro que lidera proyectos.
+    -- ON UPDATE CASCADE:  Si el ID del miembro cambia, se actualiza automáticamente en esta tabla.
+    CONSTRAINT fk_proyectos_miembros
+        FOREIGN KEY (miembro_id) REFERENCES miembros(id)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
 
--- Tabla: tareas
+-- ------------------------------------------------------------
+-- 4. TABLA: tareas
+-- Registra las tareas pertenecientes a un proyecto y asignadas a miembros.
+-- ------------------------------------------------------------
 CREATE TABLE tareas (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(200) NOT NULL,
-    descripcion TEXT,
-    estado ENUM('Pendiente', 'En progreso', 'Completada') NOT NULL DEFAULT 'Pendiente',
-    prioridad ENUM('Baja', 'Media', 'Alta') NOT NULL DEFAULT 'Media',
+    -- Clave primaria autoincremental de la tarea
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    -- Título o resumen de la tarea (Obligatorio)
+    titulo       VARCHAR(200) NOT NULL,
+    -- Descripción detallada de la tarea (Opcional)
+    descripcion  TEXT,
+    -- Estado actual de la tarea dentro del flujo de trabajo (Por defecto: 'Pendiente')
+    estado       ENUM('Pendiente', 'En progreso', 'Completada')
+                 NOT NULL DEFAULT 'Pendiente',
+    -- Nivel de prioridad o urgencia de la tarea (Por defecto: 'Media')
+    prioridad    ENUM('Baja', 'Media', 'Alta')
+                 NOT NULL DEFAULT 'Media',
+    -- Fecha límite para la entrega de la tarea (Opcional)
     fecha_limite DATE,
-    proyecto_id INT NOT NULL,
-    miembro_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (proyecto_id) REFERENCES proyectos(id) ON DELETE CASCADE,
-    FOREIGN KEY (miembro_id) REFERENCES miembros(id) ON DELETE SET NULL
-);
+    -- ID del proyecto al que pertenece obligatoriamente la tarea (Clave Foránea)
+    proyecto_id  INT          NOT NULL,
+    -- ID del miembro asignado para realizar la tarea (Clave Foránea, Opcional)
+    miembro_id   INT          NULL,
+    -- Fecha y hora de creación del registro
+    created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    -- RESTRICCIÓN FK A PROYECTOS:
+    -- ON DELETE CASCADE: Si se elimina el proyecto, se borran automáticamente todas sus tareas.
+    CONSTRAINT fk_tareas_proyectos
+        FOREIGN KEY (proyecto_id) REFERENCES proyectos(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    -- RESTRICCIÓN FK A MIEMBROS:
+    -- ON DELETE SET NULL: Si el miembro asignado es eliminado, la tarea no se borra, solo queda sin asignar (NULL).
+    CONSTRAINT fk_tareas_miembros
+        FOREIGN KEY (miembro_id) REFERENCES miembros(id)
+        ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB;
 
--- ================================================
--- Datos iniciales para demostración
--- ================================================
+-- ============================================================
+-- 5. DATOS INICIALES PARA DEMOSTRACIÓN
+-- Registros de ejemplo para verificar el funcionamiento del sistema.
+-- ============================================================
 
 INSERT INTO miembros (nombre, email, rol) VALUES
 ('Ana López', 'ana.lopez@email.com', 'Líder de Proyecto'),
