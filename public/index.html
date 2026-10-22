@@ -8,237 +8,384 @@
 </head>
 <body>
 
-  <header class="header">
-    <h1>Gestor de Proyectos</h1>
-    <p>Administra tus proyectos, tareas y equipo</p>
-  </header>
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">&#9881;</span>
+      <h1 class="brand-text">Proyectos</h1>
+    </div>
 
-  <nav class="nav">
-    <button class="nav-btn active" data-section="proyectos">Proyectos</button>
-    <button class="nav-btn" data-section="tareas">Tareas</button>
-    <button class="nav-btn" data-section="miembros">Miembros</button>
-  </nav>
+    <nav class="sidebar-nav">
+      <button class="sidebar-link active" data-section="inicio">
+        <span class="link-icon">&#127968;</span>
+        <span class="link-text">Inicio</span>
+      </button>
+      <button class="sidebar-link" data-section="proyectos">
+        <span class="link-icon">&#128193;</span>
+        <span class="link-text">Proyectos</span>
+      </button>
+      <button class="sidebar-link" data-section="tareas">
+        <span class="link-icon">&#9745;</span>
+        <span class="link-text">Tareas</span>
+      </button>
+      <button class="sidebar-link" data-section="miembros">
+        <span class="link-icon">&#128101;</span>
+        <span class="link-text">Miembros</span>
+      </button>
+    </nav>
 
-  <main class="main">
+    <div class="sidebar-section">
+      <p class="sidebar-section-title">Proyectos recientes</p>
+      <div id="sidebar-proyectos-recientes" class="sidebar-recent"></div>
+    </div>
 
-    <!-- ===================== SECCIÓN PROYECTOS ===================== -->
-    <section id="sec-proyectos" class="section active">
-      <div class="section-header">
+    <!-- Panel de miembros del proyecto -->
+    <div id="panel-miembros-proyecto" class="sidebar-panel hidden">
+      <div class="sidebar-panel-header">
+        <span id="panel-miembros-titulo">Miembros</span>
+        <button class="sidebar-panel-close" id="cerrar-panel-miembros">&times;</button>
+      </div>
+      <div id="panel-miembros-lista" class="sidebar-panel-body"></div>
+    </div>
+
+    <div class="sidebar-footer">
+      <p>Desarrollo Web 2026</p>
+    </div>
+  </aside>
+
+  <!-- ===== CONTENIDO PRINCIPAL ===== -->
+  <div class="layout-main">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <button class="topbar-toggle" id="toggle-sidebar">&#9776;</button>
+      <div class="topbar-title" id="topbar-title">
+        <span class="topbar-code">GP</span>
         <h2>Proyectos</h2>
-        <button class="btn btn-primary" id="btn-nuevo-proyecto">+ Nuevo Proyecto</button>
       </div>
+      <div class="topbar-actions" id="topbar-actions"></div>
+    </header>
 
-      <div id="lista-proyectos" class="cards-grid"></div>
+    <!-- Tabs -->
+    <div class="tabs" id="content-tabs"></div>
 
-      <!-- Modal para crear/editar proyecto -->
-      <div id="modal-proyecto" class="modal hidden">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3 id="modal-proyecto-titulo">Nuevo Proyecto</h3>
-            <button class="modal-close" id="cerrar-modal-proyecto">&times;</button>
+    <main class="main">
+
+      <!-- ===================== SECCIÓN INICIO ===================== -->
+      <section id="sec-inicio" class="section active">
+        <div class="inicio-hero">
+          <div class="inicio-content">
+            <div class="inicio-logo">
+              <img src="img/logo-umg.png" alt="Universidad Mariano Gálvez de Guatemala" width="120" height="120">
+            </div>
+            <h1 class="inicio-titulo">Gestione y controle sus proyectos y tareas de comienzo a fin</h1>
+            <p class="inicio-subtitulo">Planifique, controle y organice mejor sus proyectos y tareas con un software todo en uno que se adecua a sus necesidades.</p>
+            <button class="inicio-btn" id="btn-comenzar">COMIENCE A GESTIONAR SUS PROYECTOS</button>
           </div>
-          <form id="form-proyecto">
-            <input type="hidden" id="proyecto-id">
-            <div class="form-group">
-              <label for="proyecto-nombre">Nombre *</label>
-              <input type="text" id="proyecto-nombre" required maxlength="150">
-            </div>
-            <div class="form-group">
-              <label for="proyecto-descripcion">Descripción</label>
-              <textarea id="proyecto-descripcion" rows="3"></textarea>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="proyecto-fecha-inicio">Fecha Inicio *</label>
-                <input type="date" id="proyecto-fecha-inicio" required>
-              </div>
-              <div class="form-group">
-                <label for="proyecto-fecha-fin">Fecha Fin</label>
-                <input type="date" id="proyecto-fecha-fin">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="proyecto-estado">Estado</label>
-                <select id="proyecto-estado">
-                  <option value="Planificación">Planificación</option>
-                  <option value="En progreso">En progreso</option>
-                  <option value="Completado">Completado</option>
-                  <option value="Cancelado">Cancelado</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="proyecto-responsable">Responsable *</label>
-                <select id="proyecto-responsable" required>
-                  <option value="">Seleccionar...</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-actions">
-              <button type="button" class="btn btn-secondary" id="cancelar-proyecto">Cancelar</button>
-              <button type="submit" class="btn btn-primary">Guardar</button>
-            </div>
-          </form>
+          <div class="inicio-illustration">
+            <svg viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+              <!-- Fondo circular -->
+              <circle cx="300" cy="200" r="170" fill="#e8f4f8" opacity="0.5"/>
+              <!-- Monitor -->
+              <rect x="180" y="60" width="240" height="160" rx="8" fill="#ffffff" stroke="#334155" stroke-width="3"/>
+              <rect x="280" y="220" width="40" height="25" fill="#334155"/>
+              <rect x="250" y="245" width="100" height="8" rx="4" fill="#334155"/>
+              <!-- Barras de grafica -->
+              <rect x="210" y="150" width="25" height="50" rx="3" fill="#34a853"/>
+              <rect x="245" y="120" width="25" height="80" rx="3" fill="#1a73e8"/>
+              <rect x="280" y="135" width="25" height="65" rx="3" fill="#f9ab00"/>
+              <rect x="315" y="100" width="25" height="100" rx="3" fill="#ea4335"/>
+              <rect x="350" y="130" width="25" height="70" rx="3" fill="#34a853"/>
+              <!-- Lineas de texto -->
+              <rect x="210" y="80" width="80" height="6" rx="3" fill="#e2e8f0"/>
+              <rect x="210" y="95" width="60" height="6" rx="3" fill="#e2e8f0"/>
+              <!-- Circulo grafica pie -->
+              <circle cx="375" cy="100" r="20" fill="none" stroke="#1a73e8" stroke-width="10" stroke-dasharray="40 85"/>
+              <circle cx="375" cy="100" r="20" fill="none" stroke="#ea4335" stroke-width="10" stroke-dasharray="30 95" stroke-dashoffset="-40"/>
+              <circle cx="375" cy="100" r="20" fill="none" stroke="#34a853" stroke-width="10" stroke-dasharray="20 105" stroke-dashoffset="-70"/>
+              <!-- Persona 1 (izquierda) -->
+              <circle cx="120" cy="200" r="20" fill="#ffb38a"/>
+              <rect x="100" y="225" width="40" height="60" rx="8" fill="#ea4335"/>
+              <rect x="95" y="285" width="18" height="45" rx="5" fill="#334155"/>
+              <rect x="127" y="285" width="18" height="45" rx="5" fill="#334155"/>
+              <!-- Persona 2 (derecha) -->
+              <circle cx="430" cy="230" r="18" fill="#ffb38a"/>
+              <rect x="412" y="252" width="36" height="55" rx="8" fill="#1a73e8"/>
+              <rect x="408" y="307" width="16" height="40" rx="5" fill="#334155"/>
+              <rect x="436" y="307" width="16" height="40" rx="5" fill="#334155"/>
+              <!-- Persona 3 (sentada) -->
+              <circle cx="380" cy="280" r="16" fill="#ffb38a"/>
+              <rect x="364" y="299" width="32" height="45" rx="8" fill="#f9ab00"/>
+              <!-- Laptop -->
+              <rect x="340" y="320" width="50" height="30" rx="3" fill="#64748b"/>
+              <rect x="343" y="323" width="44" height="22" rx="2" fill="#a5f3fc"/>
+              <!-- Decoraciones -->
+              <circle cx="450" cy="80" r="5" fill="#ea4335" opacity="0.6"/>
+              <polygon points="160,60 165,50 170,60" fill="#f9ab00" opacity="0.6"/>
+              <rect x="420" y="130" width="8" height="8" rx="1" fill="#34a853" opacity="0.6" transform="rotate(45 424 134)"/>
+              <circle cx="140" cy="130" r="4" fill="#1a73e8" opacity="0.5"/>
+              <polygon points="460,180 465,170 470,180" fill="#1a73e8" opacity="0.5"/>
+            </svg>
+          </div>
         </div>
-      </div>
-    </section>
 
-    <!-- ===================== SECCIÓN TAREAS ===================== -->
-    <section id="sec-tareas" class="section hidden">
-      <div class="section-header">
-        <h2>Tareas</h2>
-        <div class="section-header-actions">
-          <select id="filtro-proyecto" class="select-filtro">
-            <option value="">Todos los proyectos</option>
+        <div class="inicio-stats" id="inicio-stats">
+          <div class="stat-card">
+            <span class="stat-number" id="stat-proyectos">0</span>
+            <span class="stat-label">Proyectos</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" id="stat-tareas">0</span>
+            <span class="stat-label">Tareas</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" id="stat-miembros">0</span>
+            <span class="stat-label">Miembros</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SECCIÓN PROYECTOS ===================== -->
+      <section id="sec-proyectos" class="section hidden">
+        <div class="section-toolbar">
+          <div class="toolbar-info">
+            <span class="toolbar-label">Total abiertos</span>
+          </div>
+          <button class="btn btn-success" id="btn-nuevo-proyecto">+ Nuevo Proyecto</button>
+        </div>
+
+        <div class="table-container">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th class="th-check"><input type="checkbox" disabled></th>
+                <th>ID</th>
+                <th>Nombre del Proyecto</th>
+                <th>Descripción</th>
+                <th>Responsable</th>
+                <th>Estado</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-proyectos"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===================== SECCIÓN TAREAS ===================== -->
+      <section id="sec-tareas" class="section hidden">
+        <div class="section-toolbar">
+          <div class="toolbar-info">
+            <select id="filtro-proyecto" class="select-filtro">
+              <option value="">Todos los proyectos</option>
+            </select>
+          </div>
+          <button class="btn btn-success" id="btn-nueva-tarea">+ Nueva Tarea</button>
+        </div>
+
+        <div class="table-container">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th class="th-check"><input type="checkbox" disabled></th>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Proyecto</th>
+                <th>Asignado</th>
+                <th>Prioridad</th>
+                <th>Estado</th>
+                <th>Fecha Límite</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-tareas"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===================== SECCIÓN MIEMBROS ===================== -->
+      <section id="sec-miembros" class="section hidden">
+        <div class="section-toolbar">
+          <div class="toolbar-info">
+            <span class="toolbar-label">Equipo de trabajo</span>
+          </div>
+          <button class="btn btn-success" id="btn-nuevo-miembro">+ Nuevo Miembro</button>
+        </div>
+
+        <div class="table-container">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th class="th-check"><input type="checkbox" disabled></th>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-miembros"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===== MODALES ===== -->
+
+  <!-- Modal Proyecto -->
+  <div id="modal-proyecto" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-proyecto-titulo">Nuevo Proyecto</h3>
+        <button class="modal-close" id="cerrar-modal-proyecto">&times;</button>
+      </div>
+      <form id="form-proyecto">
+        <input type="hidden" id="proyecto-id">
+        <div class="form-group">
+          <label for="proyecto-nombre">Nombre *</label>
+          <input type="text" id="proyecto-nombre" required maxlength="150">
+        </div>
+        <div class="form-group">
+          <label for="proyecto-descripcion">Descripción</label>
+          <textarea id="proyecto-descripcion" rows="3"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="proyecto-fecha-inicio">Fecha Inicio *</label>
+            <input type="date" id="proyecto-fecha-inicio" required>
+          </div>
+          <div class="form-group">
+            <label for="proyecto-fecha-fin">Fecha Fin</label>
+            <input type="date" id="proyecto-fecha-fin">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="proyecto-estado">Estado</label>
+            <select id="proyecto-estado">
+              <option value="Planificación">Planificación</option>
+              <option value="En progreso">En progreso</option>
+              <option value="Completado">Completado</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="proyecto-responsable">Responsable *</label>
+            <select id="proyecto-responsable" required>
+              <option value="">Seleccionar...</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelar-proyecto">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Tarea -->
+  <div id="modal-tarea" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-tarea-titulo">Nueva Tarea</h3>
+        <button class="modal-close" id="cerrar-modal-tarea">&times;</button>
+      </div>
+      <form id="form-tarea">
+        <input type="hidden" id="tarea-id">
+        <div class="form-group">
+          <label for="tarea-titulo">Título *</label>
+          <input type="text" id="tarea-titulo" required maxlength="200">
+        </div>
+        <div class="form-group">
+          <label for="tarea-descripcion">Descripción</label>
+          <textarea id="tarea-descripcion" rows="3"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tarea-proyecto">Proyecto *</label>
+            <select id="tarea-proyecto" required>
+              <option value="">Seleccionar...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tarea-miembro">Asignar a</label>
+            <select id="tarea-miembro">
+              <option value="">Sin asignar</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tarea-prioridad">Prioridad</label>
+            <select id="tarea-prioridad">
+              <option value="Baja">Baja</option>
+              <option value="Media" selected>Media</option>
+              <option value="Alta">Alta</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tarea-estado">Estado</label>
+            <select id="tarea-estado">
+              <option value="Pendiente">Pendiente</option>
+              <option value="En progreso">En progreso</option>
+              <option value="Completada">Completada</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="tarea-fecha-limite">Fecha Límite</label>
+          <input type="date" id="tarea-fecha-limite">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelar-tarea">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Miembro -->
+  <div id="modal-miembro" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-miembro-titulo">Nuevo Miembro</h3>
+        <button class="modal-close" id="cerrar-modal-miembro">&times;</button>
+      </div>
+      <form id="form-miembro">
+        <input type="hidden" id="miembro-id">
+        <div class="form-group">
+          <label for="miembro-nombre">Nombre *</label>
+          <input type="text" id="miembro-nombre" required maxlength="100">
+        </div>
+        <div class="form-group">
+          <label for="miembro-email">Email *</label>
+          <input type="email" id="miembro-email" required maxlength="150">
+        </div>
+        <div class="form-group">
+          <label for="miembro-rol">Rol</label>
+          <select id="miembro-rol">
+            <option value="Desarrollador">Desarrollador</option>
+            <option value="Diseñadora">Diseñador/a</option>
+            <option value="Líder de Proyecto">Líder de Proyecto</option>
+            <option value="QA Tester">QA Tester</option>
+            <option value="DevOps">DevOps</option>
           </select>
-          <button class="btn btn-primary" id="btn-nueva-tarea">+ Nueva Tarea</button>
         </div>
-      </div>
-
-      <div id="lista-tareas" class="table-container">
-        <table class="tabla">
-          <thead>
-            <tr>
-              <th>Título</th>
-              <th>Proyecto</th>
-              <th>Asignado</th>
-              <th>Prioridad</th>
-              <th>Estado</th>
-              <th>Fecha Límite</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-tareas"></tbody>
-        </table>
-      </div>
-
-      <!-- Modal para crear/editar tarea -->
-      <div id="modal-tarea" class="modal hidden">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3 id="modal-tarea-titulo">Nueva Tarea</h3>
-            <button class="modal-close" id="cerrar-modal-tarea">&times;</button>
-          </div>
-          <form id="form-tarea">
-            <input type="hidden" id="tarea-id">
-            <div class="form-group">
-              <label for="tarea-titulo">Título *</label>
-              <input type="text" id="tarea-titulo" required maxlength="200">
-            </div>
-            <div class="form-group">
-              <label for="tarea-descripcion">Descripción</label>
-              <textarea id="tarea-descripcion" rows="3"></textarea>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="tarea-proyecto">Proyecto *</label>
-                <select id="tarea-proyecto" required>
-                  <option value="">Seleccionar...</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="tarea-miembro">Asignar a</label>
-                <select id="tarea-miembro">
-                  <option value="">Sin asignar</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="tarea-prioridad">Prioridad</label>
-                <select id="tarea-prioridad">
-                  <option value="Baja">Baja</option>
-                  <option value="Media" selected>Media</option>
-                  <option value="Alta">Alta</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="tarea-estado">Estado</label>
-                <select id="tarea-estado">
-                  <option value="Pendiente">Pendiente</option>
-                  <option value="En progreso">En progreso</option>
-                  <option value="Completada">Completada</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="tarea-fecha-limite">Fecha Límite</label>
-              <input type="date" id="tarea-fecha-limite">
-            </div>
-            <div class="form-actions">
-              <button type="button" class="btn btn-secondary" id="cancelar-tarea">Cancelar</button>
-              <button type="submit" class="btn btn-primary">Guardar</button>
-            </div>
-          </form>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelar-miembro">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
-      </div>
-    </section>
-
-    <!-- ===================== SECCIÓN MIEMBROS ===================== -->
-    <section id="sec-miembros" class="section hidden">
-      <div class="section-header">
-        <h2>Miembros del Equipo</h2>
-        <button class="btn btn-primary" id="btn-nuevo-miembro">+ Nuevo Miembro</button>
-      </div>
-
-      <div id="lista-miembros" class="table-container">
-        <table class="tabla">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-miembros"></tbody>
-        </table>
-      </div>
-
-      <!-- Modal para crear/editar miembro -->
-      <div id="modal-miembro" class="modal hidden">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3 id="modal-miembro-titulo">Nuevo Miembro</h3>
-            <button class="modal-close" id="cerrar-modal-miembro">&times;</button>
-          </div>
-          <form id="form-miembro">
-            <input type="hidden" id="miembro-id">
-            <div class="form-group">
-              <label for="miembro-nombre">Nombre *</label>
-              <input type="text" id="miembro-nombre" required maxlength="100">
-            </div>
-            <div class="form-group">
-              <label for="miembro-email">Email *</label>
-              <input type="email" id="miembro-email" required maxlength="150">
-            </div>
-            <div class="form-group">
-              <label for="miembro-rol">Rol</label>
-              <select id="miembro-rol">
-                <option value="Desarrollador">Desarrollador</option>
-                <option value="Diseñadora">Diseñador/a</option>
-                <option value="Líder de Proyecto">Líder de Proyecto</option>
-                <option value="QA Tester">QA Tester</option>
-                <option value="DevOps">DevOps</option>
-              </select>
-            </div>
-            <div class="form-actions">
-              <button type="button" class="btn btn-secondary" id="cancelar-miembro">Cancelar</button>
-              <button type="submit" class="btn btn-primary">Guardar</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section>
-
-  </main>
+      </form>
+    </div>
+  </div>
 
   <!-- Notificación -->
   <div id="notificacion" class="notificacion hidden"></div>
-
-  <footer class="footer">
-    <p>Gestor de Proyectos &mdash; Desarrollo Web 2026</p>
-  </footer>
 
   <script src="js/app.js"></script>
 </body>

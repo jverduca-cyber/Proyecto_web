@@ -53,25 +53,84 @@ function badgePrioridad(prioridad) {
   return `<span class="badge badge-${clase}">${prioridad}</span>`;
 }
 
-// ===== Navegación =====
+// ===== Navegación (Sidebar) =====
 
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s => {
-      s.classList.remove('active');
-      s.classList.add('hidden');
-    });
+const sectionTitles = {
+  inicio: 'Inicio',
+  proyectos: 'Proyectos',
+  tareas: 'Tareas',
+  miembros: 'Miembros del Equipo'
+};
 
-    btn.classList.add('active');
-    const seccion = document.getElementById(`sec-${btn.dataset.section}`);
-    seccion.classList.remove('hidden');
-    seccion.classList.add('active');
-
-    if (btn.dataset.section === 'proyectos') cargarProyectos();
-    if (btn.dataset.section === 'tareas') cargarTareas();
-    if (btn.dataset.section === 'miembros') cargarMiembros();
+function navegarA(seccion) {
+  document.querySelectorAll('.sidebar-link').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => {
+    s.classList.remove('active');
+    s.classList.add('hidden');
   });
+
+  const btn = document.querySelector(`.sidebar-link[data-section="${seccion}"]`);
+  if (btn) btn.classList.add('active');
+
+  const sec = document.getElementById(`sec-${seccion}`);
+  sec.classList.remove('hidden');
+  sec.classList.add('active');
+
+  document.querySelector('.topbar-title h2').textContent = sectionTitles[seccion] || seccion;
+
+  if (seccion === 'inicio') cargarInicio();
+  if (seccion === 'proyectos') cargarProyectos();
+  if (seccion === 'tareas') cargarTareas();
+  if (seccion === 'miembros') cargarMiembros();
+}
+
+document.querySelectorAll('.sidebar-link').forEach(btn => {
+  btn.addEventListener('click', () => navegarA(btn.dataset.section));
+});
+
+// Sidebar toggle (responsive)
+document.getElementById('toggle-sidebar').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+// Panel de miembros del proyecto (sidebar)
+async function mostrarMiembrosProyecto(proyectoId, nombreProyecto) {
+  const panel = document.getElementById('panel-miembros-proyecto');
+  const titulo = document.getElementById('panel-miembros-titulo');
+  const lista = document.getElementById('panel-miembros-lista');
+
+  titulo.textContent = nombreProyecto;
+  lista.innerHTML = '<div class="sidebar-miembro"><span style="color:#8899aa">Cargando...</span></div>';
+  panel.classList.remove('hidden');
+
+  try {
+    const miembros = await fetchJSON(`${API}/proyectos/${proyectoId}/miembros`);
+
+    if (miembros.length === 0) {
+      lista.innerHTML = '<div class="sidebar-miembro"><span style="color:#8899aa">Sin miembros asignados</span></div>';
+      return;
+    }
+
+    lista.innerHTML = miembros.map(m => {
+      const iniciales = m.nombre.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+      const tipo = m.participacion.toLowerCase();
+      return `
+        <div class="sidebar-miembro">
+          <div class="miembro-avatar ${tipo}">${iniciales}</div>
+          <div class="miembro-info">
+            <div class="miembro-info-nombre">${m.nombre}</div>
+            <div class="miembro-info-rol">${m.participacion} · ${m.rol}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (error) {
+    lista.innerHTML = '<div class="sidebar-miembro"><span style="color:#ea4335">Error al cargar</span></div>';
+  }
+}
+
+document.getElementById('cerrar-panel-miembros').addEventListener('click', () => {
+  document.getElementById('panel-miembros-proyecto').classList.add('hidden');
 });
 
 // ===== MIEMBROS =====
@@ -82,18 +141,20 @@ async function cargarMiembros() {
     const tbody = document.getElementById('tbody-miembros');
 
     if (miembros.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="empty-message">No hay miembros registrados</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-message">No hay miembros registrados</td></tr>';
       return;
     }
 
     tbody.innerHTML = miembros.map(m => `
       <tr>
-        <td>${m.nombre}</td>
+        <td><input type="checkbox" disabled></td>
+        <td class="td-id">MB-${String(m.id).padStart(2, '0')}</td>
+        <td class="td-name">${m.nombre}</td>
         <td>${m.email}</td>
         <td>${m.rol}</td>
         <td class="acciones">
-          <button class="btn btn-sm btn-secondary" onclick="editarMiembro(${m.id})">Editar</button>
-          <button class="btn btn-sm btn-danger" onclick="eliminarMiembro(${m.id}, '${m.nombre}')">Eliminar</button>
+          <button class="btn-action" onclick="editarMiembro(${m.id})">Editar</button>
+          <button class="btn-action-danger" onclick="eliminarMiembro(${m.id}, '${m.nombre}')">Eliminar</button>
         </td>
       </tr>
     `).join('');
@@ -213,27 +274,41 @@ async function cargarSelectProyectos() {
 async function cargarProyectos() {
   try {
     const proyectos = await fetchJSON(`${API}/proyectos`);
-    const contenedor = document.getElementById('lista-proyectos');
+    const tbody = document.getElementById('tbody-proyectos');
+
+    // Sidebar: proyectos recientes (clickeables para ver miembros)
+    const sidebarRecientes = document.getElementById('sidebar-proyectos-recientes');
+    sidebarRecientes.innerHTML = proyectos.map(p =>
+      `<div class="sidebar-recent-item" data-proyecto-id="${p.id}" data-proyecto-nombre="${p.nombre}">${p.nombre}</div>`
+    ).join('');
+
+    sidebarRecientes.querySelectorAll('.sidebar-recent-item').forEach(item => {
+      item.style.cursor = 'pointer';
+      item.addEventListener('click', () => {
+        mostrarMiembrosProyecto(item.dataset.proyectoId, item.dataset.proyectoNombre);
+      });
+    });
 
     if (proyectos.length === 0) {
-      contenedor.innerHTML = '<div class="empty-message">No hay proyectos. Crea el primero.</div>';
+      tbody.innerHTML = '<tr><td colspan="9" class="empty-message">No hay proyectos. Crea el primero.</td></tr>';
       return;
     }
 
-    contenedor.innerHTML = proyectos.map(p => `
-      <article class="card">
-        <h3 class="card-title">${p.nombre}</h3>
-        <p class="card-desc">${p.descripcion || 'Sin descripción'}</p>
-        <div class="card-meta">
-          ${badgeEstado(p.estado)}
-          <span>Responsable: ${p.responsable}</span>
-          <span>${formatearFecha(p.fecha_inicio)} — ${formatearFecha(p.fecha_fin)}</span>
-        </div>
-        <div class="card-actions">
-          <button class="btn btn-sm btn-secondary" onclick="editarProyecto(${p.id})">Editar</button>
-          <button class="btn btn-sm btn-danger" onclick="eliminarProyecto(${p.id}, '${p.nombre}')">Eliminar</button>
-        </div>
-      </article>
+    tbody.innerHTML = proyectos.map(p => `
+      <tr>
+        <td><input type="checkbox" disabled></td>
+        <td class="td-id">PY-${String(p.id).padStart(2, '0')}</td>
+        <td class="td-name">${p.nombre}</td>
+        <td class="td-desc">${p.descripcion || 'Sin descripción'}</td>
+        <td class="td-secondary">${p.responsable}</td>
+        <td>${badgeEstado(p.estado)}</td>
+        <td class="td-secondary">${formatearFecha(p.fecha_inicio)}</td>
+        <td class="td-secondary">${formatearFecha(p.fecha_fin)}</td>
+        <td class="acciones">
+          <button class="btn-action" onclick="editarProyecto(${p.id})">Editar</button>
+          <button class="btn-action-danger" onclick="eliminarProyecto(${p.id}, '${p.nombre}')">Eliminar</button>
+        </td>
+      </tr>
     `).join('');
   } catch (error) {
     mostrarNotificacion(error.message, 'error');
@@ -325,21 +400,23 @@ async function cargarTareas() {
     const tbody = document.getElementById('tbody-tareas');
 
     if (tareas.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty-message">No hay tareas registradas</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="empty-message">No hay tareas registradas</td></tr>';
       return;
     }
 
     tbody.innerHTML = tareas.map(t => `
       <tr>
-        <td>${t.titulo}</td>
-        <td>${t.proyecto_nombre}</td>
-        <td>${t.asignado || 'Sin asignar'}</td>
+        <td><input type="checkbox" disabled></td>
+        <td class="td-id">TR-${String(t.id).padStart(2, '0')}</td>
+        <td class="td-name">${t.titulo}</td>
+        <td class="td-secondary">${t.proyecto_nombre}</td>
+        <td class="td-secondary">${t.asignado || 'Sin asignar'}</td>
         <td>${badgePrioridad(t.prioridad)}</td>
         <td>${badgeEstado(t.estado)}</td>
-        <td>${formatearFecha(t.fecha_limite)}</td>
+        <td class="td-secondary">${formatearFecha(t.fecha_limite)}</td>
         <td class="acciones">
-          <button class="btn btn-sm btn-secondary" onclick="editarTarea(${t.id})">Editar</button>
-          <button class="btn btn-sm btn-danger" onclick="eliminarTarea(${t.id}, '${t.titulo}')">Eliminar</button>
+          <button class="btn-action" onclick="editarTarea(${t.id})">Editar</button>
+          <button class="btn-action-danger" onclick="eliminarTarea(${t.id}, '${t.titulo}')">Eliminar</button>
         </td>
       </tr>
     `).join('');
@@ -425,8 +502,43 @@ document.getElementById('cerrar-modal-tarea').addEventListener('click', cerrarMo
 document.getElementById('cancelar-tarea').addEventListener('click', cerrarModalTarea);
 document.getElementById('filtro-proyecto').addEventListener('change', cargarTareas);
 
+// ===== INICIO =====
+
+async function cargarInicio() {
+  try {
+    const [proyectos, tareas, miembros] = await Promise.all([
+      fetchJSON(`${API}/proyectos`),
+      fetchJSON(`${API}/tareas`),
+      fetchJSON(`${API}/miembros`)
+    ]);
+
+    document.getElementById('stat-proyectos').textContent = proyectos.length;
+    document.getElementById('stat-tareas').textContent = tareas.length;
+    document.getElementById('stat-miembros').textContent = miembros.length;
+
+    // Sidebar: proyectos recientes
+    const sidebarRecientes = document.getElementById('sidebar-proyectos-recientes');
+    sidebarRecientes.innerHTML = proyectos.map(p =>
+      `<div class="sidebar-recent-item" data-proyecto-id="${p.id}" data-proyecto-nombre="${p.nombre}">${p.nombre}</div>`
+    ).join('');
+    sidebarRecientes.querySelectorAll('.sidebar-recent-item').forEach(item => {
+      item.style.cursor = 'pointer';
+      item.addEventListener('click', () => {
+        mostrarMiembrosProyecto(item.dataset.proyectoId, item.dataset.proyectoNombre);
+      });
+    });
+  } catch (error) {
+    console.error('Error cargando inicio:', error);
+  }
+}
+
+document.getElementById('btn-comenzar').addEventListener('click', () => {
+  navegarA('proyectos');
+});
+
 // ===== Inicialización =====
 
 document.addEventListener('DOMContentLoaded', () => {
-  cargarProyectos();
+  document.querySelector('.topbar-title h2').textContent = 'Inicio';
+  cargarInicio();
 });

@@ -79,6 +79,24 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// GET /api/proyectos/:id/miembros — Obtener miembros asociados a un proyecto
+router.get('/:id/miembros', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT DISTINCT m.id, m.nombre, m.email, m.rol,
+        CASE WHEN p.miembro_id = m.id THEN 'Responsable' ELSE 'Colaborador' END AS participacion
+      FROM miembros m
+      LEFT JOIN proyectos p ON p.miembro_id = m.id AND p.id = ?
+      LEFT JOIN tareas t ON t.miembro_id = m.id AND t.proyecto_id = ?
+      WHERE p.id IS NOT NULL OR t.id IS NOT NULL
+      ORDER BY participacion ASC, m.nombre ASC
+    `, [req.params.id, req.params.id]);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener miembros del proyecto' });
+  }
+});
+
 // DELETE /api/proyectos/:id — Eliminar un proyecto
 router.delete('/:id', async (req, res) => {
   try {
