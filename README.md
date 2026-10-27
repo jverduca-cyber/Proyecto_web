@@ -4,7 +4,11 @@ Aplicación web Full Stack para la gestión de proyectos, tareas y miembros de e
 
 ## Integrantes
 
-- (Agregar nombres y carnés del equipo)
+| Nombre | Carné | Rol |
+|--------|-------|-----|
+| Ricardo Andrés Gill Moreno | 0900-22-13694 | Backend Developer |
+| Carlos Humberto Interiano Garzona | 0900-23-1399 | Frontend Developer |
+| Juan Pablo Verdúca Aceituno | 0900-22-717 | Full Stack Developer & DBA |
 
 ## Descripción
 
@@ -96,8 +100,8 @@ Tres tablas relacionadas:
 
 1. Clonar el repositorio:
    ```bash
-   git clone <url-del-repositorio>
-   cd gestor-proyectos
+   git clone https://github.com/jverduca-cyber/Proyecto_web.git
+   cd Proyecto_web
    ```
 
 2. Instalar dependencias:
