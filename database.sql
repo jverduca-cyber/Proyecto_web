@@ -108,12 +108,15 @@ INSERT INTO miembros (nombre, email, rol) VALUES
 ('Ana López', 'ana.lopez@email.com', 'Líder de Proyecto'),
 ('Carlos García', 'carlos.garcia@email.com', 'Desarrollador'),
 ('María Fernández', 'maria.fernandez@email.com', 'Diseñadora'),
-('José Ramírez', 'jose.ramirez@email.com', 'QA Tester');
+('José Ramírez', 'jose.ramirez@email.com', 'QA Tester'),
+('Laura Mendoza', 'laura.mendoza@email.com', 'Scrum Master'),
+('Diego Castillo', 'diego.castillo@email.com', 'Desarrollador');
 
 INSERT INTO proyectos (nombre, descripcion, fecha_inicio, fecha_fin, estado, miembro_id) VALUES
 ('Sitio Web Corporativo', 'Rediseño del sitio web principal de la empresa', '2026-10-01', '2026-12-15', 'En progreso', 1),
 ('App de Inventario', 'Sistema para gestionar inventario del almacén', '2026-09-15', '2026-11-30', 'Planificación', 2),
-('Portal de Clientes', 'Plataforma de autoservicio para clientes', '2026-08-01', '2026-10-30', 'Completado', 1);
+('Portal de Clientes', 'Plataforma de autoservicio para clientes', '2026-08-01', '2026-10-30', 'Completado', 1),
+('Sistema de Reportes', 'Dashboard de reportes y métricas del equipo', '2026-10-15', '2026-12-01', 'En progreso', 5);
 
 INSERT INTO tareas (titulo, descripcion, estado, prioridad, fecha_limite, proyecto_id, miembro_id) VALUES
 ('Diseñar mockups', 'Crear wireframes y mockups de las páginas principales', 'Completada', 'Alta', '2026-10-10', 1, 3),
@@ -121,4 +124,6 @@ INSERT INTO tareas (titulo, descripcion, estado, prioridad, fecha_limite, proyec
 ('Configurar base de datos', 'Crear esquema de BD para el inventario', 'Pendiente', 'Media', '2026-10-25', 2, 2),
 ('Escribir pruebas', 'Pruebas funcionales del portal de clientes', 'Completada', 'Media', '2026-10-15', 3, 4),
 ('Optimizar rendimiento', 'Reducir tiempos de carga del sitio web', 'Pendiente', 'Baja', '2026-11-01', 1, 2),
-('Diseñar logo', 'Propuesta de nuevo logotipo para el sitio', 'En progreso', 'Media', '2026-10-18', 1, 3);
+('Diseñar logo', 'Propuesta de nuevo logotipo para el sitio', 'En progreso', 'Media', '2026-10-18', 1, 3),
+('Crear dashboard', 'Implementar gráficas y KPIs del sistema de reportes', 'Pendiente', 'Alta', '2026-11-10', 4, 6),
+('Documentar API', 'Escribir documentación de los endpoints REST', 'En progreso', 'Media', '2026-11-05', 1, 5);
