@@ -9,8 +9,6 @@ Aplicación web Full Stack para la gestión de proyectos, tareas y miembros de e
 | Ricardo Andrés Gill Moreno | 0900-22-13694 | Backend Developer |
 | Carlos Humberto Interiano Garzona | 0900-23-1399 | Frontend Developer |
 | Juan Pablo Verdúca Aceituno | 0900-22-717 | Full Stack Developer & DBA |
-| Laura Mendoza | — | Scrum Master |
-| Diego Castillo | — | Desarrollador |
 
 ## Descripción
 
